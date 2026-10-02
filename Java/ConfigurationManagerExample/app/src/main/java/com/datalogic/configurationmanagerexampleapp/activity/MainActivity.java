@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 
 import com.datalogic.configurationmanagerexampleapp.provider.FragmentProvider;
@@ -20,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity.java";
     private ActivityMainBinding activityMainBinding;
     private NavigationDrawerBinding navigationDrawerBinding;
+    
+    private volatile static String method = "legacy";
 
     final FragmentProvider fragmentProvider = new FragmentProvider();
 
@@ -33,10 +38,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(activityMainBinding.getRoot());
         navigationDrawerBinding=NavigationDrawerBinding.inflate(getLayoutInflater());
         setContentView(navigationDrawerBinding.getRoot());
+        
+        this.applyFullScreenImmersive();
 
         /* Custom appbar and navigation drawer */
-        setNavigationDrawer();
-        setAppBar();
+//        setNavigationDrawer();
+//        setAppBar();
 
         /* Start from help activity */
         fragmentProvider.loadFragment(this, FragmentProvider.FragmentType.FRAGMENT_0);
@@ -72,8 +79,27 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+    }
 
-
+    public void applyFullScreenImmersive() {
+        Window window = this.getWindow();
+        View decor = window.getDecorView();
+        switch (method) {
+            case "legacy":
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                break;
+            case "legacyImmersive":
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+                break;
+            default:
+                break;
+        }
     }
 
 }
